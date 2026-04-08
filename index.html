@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>🍃 抽屉相册 · 黑胶留声</title>
     <style>
-        /* ===== 全局风格 ===== */
+        /* ===== 全局风格 (保持不变) ===== */
         body { 
             font-family: '微软雅黑', 'Segoe UI', sans-serif;
             background: #fff4e6; 
@@ -18,7 +18,6 @@
         }
         * { box-sizing: border-box; }
 
-        /* ===== 信封封面 ===== */
         .envelope {
             position: fixed;
             top: 0;
@@ -64,7 +63,6 @@
             50% { transform: scale(1.12); opacity: 1; }
         }
 
-        /* ===== 相册主体 ===== */
         .gallery {
             max-width: 1100px;
             width: 100%;
@@ -90,14 +88,12 @@
             text-shadow: 2px 2px 0 #f0dbc0;
         }
 
-        /* ===== 黑胶唱片区域 ===== */
         .record-player {
             text-align: center;
             margin: 15px 0 25px;
             position: relative;
         }
 
-        /* 圆形唱片 —— 核心视觉 */
         .vinyl-record {
             width: 200px;
             height: 200px;
@@ -122,7 +118,6 @@
             transform: scale(0.99);
         }
 
-        /* 唱片纹路 (同心圆光泽) */
         .vinyl-record::before {
             content: "";
             position: absolute;
@@ -141,7 +136,6 @@
             pointer-events: none;
         }
 
-        /* 高光反射 */
         .vinyl-record::after {
             content: "";
             position: absolute;
@@ -156,7 +150,6 @@
             filter: blur(3px);
         }
 
-        /* 唱片中心标签 */
         .record-label {
             position: absolute;
             top: 50%;
@@ -193,7 +186,6 @@
             border-top: 1px dashed #fad5b5;
             padding-top: 4px;
         }
-        /* 中心小圆孔 */
         .center-hole {
             position: absolute;
             top: 50%;
@@ -209,7 +201,6 @@
             pointer-events: none;
         }
 
-        /* 旋转动画 (黑胶转起来) */
         .vinyl-record.spin {
             animation: spin 3.8s linear infinite;
         }
@@ -231,7 +222,6 @@
             box-shadow: 0 2px 6px rgba(150, 100, 50, 0.1);
         }
 
-        /* ===== 照片网格 ===== */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -255,7 +245,6 @@
             border-color: #d4a373;
         }
 
-        /* 大图预览 */
         .preview {
             margin-top: 25px;
             background: #fcf3e8;
@@ -274,7 +263,6 @@
             object-fit: contain;
         }
 
-        /* 小点缀 */
         .footer-note {
             text-align: right;
             font-size: 13px;
@@ -282,7 +270,11 @@
             margin-top: 8px;
         }
 
-        /* 移动端优化 */
+        /* 隐藏视频，只播放声音 */
+        .hidden-video {
+            display: none;
+        }
+
         @media (max-width: 600px) {
             body { padding: 12px; }
             h1 { font-size: 1.8rem; }
@@ -293,7 +285,7 @@
 </head>
 <body>
 
-    <!-- 信封封面 · 点击开启 -->
+    <!-- 信封封面 -->
     <div class="envelope" onclick="openAlbum()">
         <div class="letter">
             💌 亲爱的你<br>
@@ -303,15 +295,13 @@
         <div class="icon">💌</div>
     </div>
 
-    <!-- 相册内容 (初始隐藏) -->
+    <!-- 相册内容 -->
     <div class="gallery" id="albumGallery">
         <h1>📀 抽屉留声 · 记忆唱片</h1>
 
-        <!-- 圆形黑胶唱片 + 播放器 -->
+        <!-- 圆形黑胶唱片 -->
         <div class="record-player">
-            <!-- 点击黑胶唱片播放/暂停音乐 -->
             <div class="vinyl-record" id="vinylDisc" onclick="toggleMusic()">
-                <!-- 唱片纹路与标签内部 -->
                 <div class="record-label">
                     <span class="label-title">曾婉之</span>
                     <span class="label-sub">33⅓ RPM</span>
@@ -321,7 +311,7 @@
             <p>🎵 点击唱片 · 黑胶转动 · 音乐流淌</p>
         </div>
         
-        <!-- 照片网格 (每张点击可预览) -->
+        <!-- 照片网格 -->
         <div class="grid">
             <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间1" loading="lazy">
             <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间2" loading="lazy">
@@ -339,18 +329,24 @@
         <div class="footer-note">—— 珍藏 · 我们的故事 ——</div>
     </div>
 
+    <!-- ★★★ 隐藏的视频元素 —— 替换这里的 src 为你自己的视频地址 ★★★ -->
+    <video id="bgVideo" class="hidden-video" loop preload="auto" playsinline>
+        <!-- 请将下面的 VIDEO_URL 替换成你的视频链接 -->
+        <source src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E8%A7%86%E9%A2%91/2c3d7b59ea619cc563c1911a23b044a8.mp4" type="video/mp4">
+        您的浏览器不支持视频播放。
+    </video>
+
     <script>
         (function(){
             "use strict";
 
-            // ---------- 信封打开 & 相册展示 ----------
+            // ---------- 信封打开 ----------
             window.openAlbum = function() {
                 const envelope = document.querySelector('.envelope');
                 const gallery = document.querySelector('.gallery');
                 envelope.classList.add('hide');
                 gallery.classList.add('show');
                 
-                // 默认显示第一张照片在大预览区 (若存在)
                 const firstImg = document.querySelector('.grid img');
                 const bigImg = document.getElementById('bigImg');
                 if (firstImg && bigImg) {
@@ -358,13 +354,14 @@
                     bigImg.alt = firstImg.alt || '珍藏瞬间';
                 }
 
-                // 微调: 如果音乐之前没初始化, 预加载但不自动播放 (尊重用户手势)
-                if (!audioPrepared) {
-                    prepareAudio();
+                // 预加载视频（但不自动播放）
+                const video = document.getElementById('bgVideo');
+                if (video) {
+                    video.load();
                 }
             };
 
-            // ---------- 预览大图 (点击网格图片) ----------
+            // ---------- 预览大图 ----------
             window.showImg = function(imgElement) {
                 const bigImg = document.getElementById('bigImg');
                 if (imgElement && bigImg) {
@@ -373,182 +370,85 @@
                 }
             };
 
-            // ---------- 黑胶唱片 · 音乐播放逻辑 ----------
-            // 使用更柔和、适合循环的背景音乐 (SoundHelix 示例曲 · 免版税用于演示)
-            // 如果无法访问可回退到内置提示，但绝大多数情况可用。
-            const MUSIC_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-            
-            let audio = null;
-            let isPlaying = false;
-            let audioPrepared = false;   // 标记是否已经尝试创建音频对象
+            // ---------- 黑胶唱片 · 视频声音控制 ----------
             const vinyl = document.getElementById('vinylDisc');
+            const video = document.getElementById('bgVideo');
+            let isPlaying = false;   // 同步状态
 
-            // 准备音频 (但不在页面加载时自动播放)
-            function prepareAudio() {
-                if (audio) return; // 已存在
-                try {
-                    audio = new Audio(MUSIC_URL);
-                    audio.loop = true;          // 黑胶唱片循环播放
-                    audio.volume = 0.45;         // 舒适音量
-                    audio.preload = 'auto';
-                    
-                    // 监听播放/暂停状态同步（防止外部干扰）
-                    audio.addEventListener('play', function() {
-                        isPlaying = true;
-                        vinyl.classList.add('spin');
-                    });
-                    audio.addEventListener('pause', function() {
-                        isPlaying = false;
-                        vinyl.classList.remove('spin');
-                    });
-                    audio.addEventListener('ended', function() {
-                        // 设置了loop一般不会触发，但万一呢
-                        isPlaying = false;
-                        vinyl.classList.remove('spin');
-                    });
-                    
-                    // 处理加载错误 —— 如果音乐无法播放，给出友好提示但不破坏体验
-                    audio.addEventListener('error', function(e) {
-                        console.warn('唱片音乐暂时无法加载，但你可以继续浏览照片。');
-                        // 可选：替换为极简提示音？为了优雅，不额外处理，旋转动画依然可用。
-                        // 但为了避免报错阻塞，将audio置为备用状态。
-                        isPlaying = false;
-                        vinyl.classList.remove('spin');
-                        // 用一个flag标记不可用，再次点击时不报错
-                        audio = null; 
-                        audioPrepared = false;
-                    });
-                    
-                    audioPrepared = true;
-                } catch (e) {
-                    console.log('音频初始化失败', e);
-                    audio = null;
-                    audioPrepared = false;
-                }
+            // 确保视频元数据加载后音量合适
+            if (video) {
+                video.volume = 0.5;  // 50% 音量，可根据需要调整
+                
+                // 监听视频播放/暂停事件，同步旋转和状态
+                video.addEventListener('play', function() {
+                    isPlaying = true;
+                    vinyl.classList.add('spin');
+                });
+                video.addEventListener('pause', function() {
+                    isPlaying = false;
+                    vinyl.classList.remove('spin');
+                });
+                video.addEventListener('ended', function() {
+                    // loop 已启用，一般不会触发
+                    isPlaying = false;
+                    vinyl.classList.remove('spin');
+                });
+                // 处理加载错误
+                video.addEventListener('error', function() {
+                    console.warn('视频无法加载，请检查链接。');
+                    vinyl.classList.remove('spin');
+                    isPlaying = false;
+                });
             }
 
-            // 确保音频对象存在 (首次点击唱片时再创建，更符合用户手势)
-            function ensureAudio() {
-                if (!audio) {
-                    prepareAudio();
-                }
-                // 如果音频因为错误被置null，再尝试一次
-                if (!audio) {
-                    try {
-                        audio = new Audio(MUSIC_URL);
-                        audio.loop = true;
-                        audio.volume = 0.45;
-                        audio.addEventListener('play', () => { isPlaying = true; vinyl.classList.add('spin'); });
-                        audio.addEventListener('pause', () => { isPlaying = false; vinyl.classList.remove('spin'); });
-                        audioPrepared = true;
-                    } catch (err) {
-                        audio = null;
-                    }
-                }
-                return audio;
-            }
-
-            // 切换 播放/暂停 (由唱片点击触发)
+            // 切换播放/暂停 (由唱片点击触发)
             window.toggleMusic = function() {
-                const currentAudio = ensureAudio();
-                if (!currentAudio) {
-                    // 如果实在无法创建音频，至少让唱片转一转 (视觉反馈)
-                    if (!isPlaying) {
-                        vinyl.classList.add('spin');
-                        isPlaying = true;
-                        // 但无音乐，过几秒自动停？这里给个提示转两圈后停止
-                        setTimeout(() => {
-                            if (!audio) {
-                                vinyl.classList.remove('spin');
-                                isPlaying = false;
-                            }
-                        }, 2000);
-                    } else {
-                        vinyl.classList.remove('spin');
-                        isPlaying = false;
-                    }
-                    return;
+                if (!video) return;
+
+                // 如果视频尚未加载元数据，先尝试加载
+                if (video.readyState === 0) {
+                    video.load();
                 }
 
-                // 正常音频控制
-                if (currentAudio.paused) {
-                    // 播放
-                    currentAudio.play().then(() => {
-                        // 成功播放，状态由事件同步
+                if (video.paused) {
+                    // 播放视频（画面隐藏，只听到声音）
+                    video.play().then(() => {
                         vinyl.classList.add('spin');
                         isPlaying = true;
                     }).catch(err => {
-                        // 浏览器可能限制自动播放？但这里是由用户点击触发的，通常没问题。
-                        console.warn('播放被阻止: ', err);
-                        // 尝试降级：让唱片转一下再停止
+                        console.warn('播放失败: ', err);
+                        // 降级：让唱片转一下再停（视觉反馈）
                         vinyl.classList.add('spin');
                         isPlaying = true;
                         setTimeout(() => {
                             vinyl.classList.remove('spin');
                             isPlaying = false;
-                        }, 1800);
+                        }, 2000);
                     });
                 } else {
-                    // 暂停
-                    currentAudio.pause();
+                    video.pause();
                     vinyl.classList.remove('spin');
                     isPlaying = false;
                 }
             };
 
-            // 预准备音频 (不自动播放) 等信封打开后如果有需要再创建
-            // 为了更快响应，可以在页面空闲时准备，但先不做自动创建，等用户点唱片时再创建。
-            // 但也可以预加载资源: 在信封打开时调用prepareAudio但不播放。
-            // 已在openAlbum中调用prepareAudio (但只执行一次)
-            
-            // 附加优化：如果用户点击信封后尚未点唱片，我们提前创建audio对象但不播放。
-            // 这已经在openAlbum里做了。
-
-            // 但确保openAlbum里能调用prepareAudio
-            const originalOpen = window.openAlbum;
-            window.openAlbum = function() {
-                originalOpen();
-                if (!audioPrepared) {
-                    prepareAudio();
-                }
-                // 同时设置默认预览图 (再次确保)
-                const firstImg = document.querySelector('.grid img');
-                const bigImg = document.getElementById('bigImg');
-                if (firstImg && bigImg && !bigImg.src) {
-                    bigImg.src = firstImg.src;
-                }
-            };
-
-            // 如果用户直接通过某些方式显示相册? 保留。
-            
-            // 优雅处理: 在页面完全加载后, 可尝试预连接音频资源 (非必须)
-            window.addEventListener('load', function() {
-                // 不自动播放，只是让浏览器有机会缓存
-                if (!audio) {
-                    // 静默预加载，但不会发出声音
-                    const preAudio = new Audio();
-                    preAudio.src = MUSIC_URL;
-                    preAudio.preload = 'auto';
-                    // 不播放，只是缓存
-                }
-                // 默认预览图 (如果信封未打开但相册强行显示? 一般不会)
-            });
-
-            // 唱片旋转与暂停状态同步: 若音乐播放中用户刷新页面？状态丢失，没关系。
-            // 增加一个保险：如果audio因ended或其他原因暂停，同步移除spin
-            // 已经在事件中处理
-
-            // 页面卸载前暂停音乐（可选）
+            // 页面卸载前暂停视频（释放资源）
             window.addEventListener('beforeunload', function() {
-                if (audio && !audio.paused) {
-                    audio.pause();
+                if (video && !video.paused) {
+                    video.pause();
                 }
             });
 
-            // 最后: 解决一个潜在问题 —— 如果用户先点击唱片，再打开信封? 不可能，信封遮挡。
-            // 一切正常。
+            // 默认预览图设置（如果信封未打开时，bigImg没有src也没关系）
+            // 这里不做额外处理，openAlbum 中已处理。
         })();
     </script>
-    <!-- 注：唱片音乐采用SoundHelix示例曲，仅用于演示黑胶旋转效果，可自行替换 -->
+    <!-- 
+        使用说明：
+        1. 找到上面 <video> 标签里的 src 属性。
+        2. 将 "https://www.w3schools.com/html/mov_bbb.mp4" 替换成你自己的视频链接。
+        3. 确保视频格式是浏览器支持的（如 MP4、WebM）。
+        4. 视频链接需要支持跨域访问（通常上传到图床或对象存储即可）。
+    -->
 </body>
 </html>
