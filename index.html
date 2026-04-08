@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的抽屉相册</title>
     <style>
-        body { font-family: 微软雅黑; background: #f4f4f4; padding: 20px; margin: 0; }
+        body { 
+            font-family: 微软雅黑; 
+            background: #fff4e6; /* 浅橙色背景 */
+            padding: 20px; 
+            margin: 0; 
+        }
         * { box-sizing: border-box; }
 
         /* ============== 信封封面 ============== */
@@ -47,20 +52,40 @@
             50% { transform: scale(1.15); }
         }
 
-        /* ============== 相册主体（默认隐藏） ============== */
+        /* ============== 相册主体 ============== */
         .gallery {
             max-width: 1000px;
             margin: 0 auto;
-            display: none; /* 初始隐藏 */
+            display: none;
         }
         .gallery.show {
-            display: block; /* 打开后显示 */
+            display: block;
         }
         h1 {
             text-align: center;
             color: #333;
         }
-        /* 网格布局 */
+
+        /* 留声机 */
+        .record-player {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .record-icon {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .record-icon.spin {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 网格 */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -78,7 +103,7 @@
         .grid img:hover {
             transform: scale(1.03);
         }
-        /* 预览区域 */
+        /* 预览 */
         .preview {
             margin-top: 30px;
             background: white;
@@ -95,7 +120,7 @@
 </head>
 <body>
 
-    <!-- ============== 信封封面 ============== -->
+    <!-- 信封 -->
     <div class="envelope" onclick="openAlbum()">
         <div class="letter">
             💌 亲爱的你<br>
@@ -105,9 +130,20 @@
         <div class="icon">💌</div>
     </div>
 
-    <!-- ============== 相册主体 ============== -->
+    <!-- 相册 -->
     <div class="gallery">
         <h1>📁 我的私人相册</h1>
+
+        <!-- 留声机 -->
+        <div class="record-player">
+            <img 
+                class="record-icon" 
+                src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" 
+                onclick="toggleMusic()"
+                alt="留声机"
+            >
+            <p>点击留声机播放/暂停音乐</p>
+        </div>
         
         <div class="grid">
             <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" onclick="showImg(this)" alt="照片1">
@@ -134,6 +170,23 @@
         // 预览大图
         function showImg(img) {
             document.getElementById("bigImg").src = img.src;
+        }
+
+        // 音乐 + 留声机旋转
+        let isPlaying = false;
+        let audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"); // 示例音乐
+
+        function toggleMusic() {
+            let icon = document.querySelector('.record-icon');
+            if (!isPlaying) {
+                audio.play();
+                icon.classList.add('spin');
+                isPlaying = true;
+            } else {
+                audio.pause();
+                icon.classList.remove('spin');
+                isPlaying = false;
+            }
         }
     </script>
 </body>
