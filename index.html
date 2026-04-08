@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎞️ 留声电影院 · 翻页相册</title>
+    <title>🎞️ 留声电影院 · 星空相册</title>
     <style>
-        /* ===== 全局 ===== */
+        /* ===== 全局 + 星空边缘效果 ===== */
         body {
             font-family: '微软雅黑', 'Segoe UI', sans-serif;
             background: #fff4e6;
@@ -15,10 +15,47 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            /* 星空边缘：使用伪元素叠加 */
         }
         * { box-sizing: border-box; }
 
-        /* ===== 放大版信封 —— 如苹果般醒目 ===== */
+        /* 星空边缘 (约2cm = 75px) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            /* 深色星空背景 + 星星 */
+            background: radial-gradient(2px 2px at 15% 8%, #ffe8c7, transparent 80%),
+                        radial-gradient(3px 3px at 85% 12%, #f0dbb0, transparent 80%),
+                        radial-gradient(2px 2px at 22% 92%, #ffe3b5, transparent 80%),
+                        radial-gradient(4px 4px at 78% 88%, #efd4a8, transparent 80%),
+                        radial-gradient(3px 3px at 5% 45%, #ffebc2, transparent 80%),
+                        radial-gradient(2px 2px at 95% 35%, #f8deae, transparent 80%),
+                        radial-gradient(4px 4px at 40% 98%, #ffe5bc, transparent 80%),
+                        radial-gradient(2px 2px at 65% 5%, #ffdbaa, transparent 80%),
+                        radial-gradient(3px 3px at 92% 72%, #ffefc9, transparent 80%),
+                        radial-gradient(2px 2px at 8% 75%, #fad9a3, transparent 80%),
+                        radial-gradient(4px 4px at 48% 15%, #ffe0b7, transparent 80%),
+                        radial-gradient(3px 3px at 55% 82%, #f2d19e, transparent 80%),
+                        /* 再加一些深色底纹，让星星更明显 */
+                        repeating-linear-gradient(45deg, rgba(25, 20, 15, 0.08) 0px, rgba(25, 20, 15, 0.08) 2px, 
+                        transparent 2px, transparent 8px);
+            background-color: #1f1a14;  /* 深色基底 */
+            /* 使用 mask 让边缘2cm显示，中心透明 */
+            -webkit-mask: radial-gradient(circle at center, 
+                transparent 0, 
+                transparent calc(100% - 75px), 
+                black calc(100% - 75px));
+            mask: radial-gradient(circle at center, 
+                transparent 0, 
+                transparent calc(100% - 75px), 
+                black calc(100% - 75px));
+        }
+
+        /* ===== 放大版信封 ===== */
         .envelope {
             position: fixed;
             top: 0;
@@ -43,7 +80,7 @@
             transform: translateY(-100%);
         }
         .envelope .letter {
-            font-size: 48px;        /* 大号文字 */
+            font-size: 48px;
             color: #5d3f2b;
             margin-bottom: 50px;
             text-align: center;
@@ -54,7 +91,7 @@
             text-shadow: 4px 4px 0 rgba(255, 245, 220, 0.9);
         }
         .envelope .icon {
-            font-size: 130px;        /* 巨大图标 */
+            font-size: 130px;
             color: #c25b3a;
             filter: drop-shadow(0 16px 20px rgba(160, 80, 40, 0.3));
             animation: beat 1.8s infinite;
@@ -64,7 +101,7 @@
             50% { transform: scale(1.1); opacity: 1; }
         }
 
-        /* ===== 相册主体 ===== */
+        /* ===== 相册主体 (置于星空之上) ===== */
         .gallery {
             max-width: 1400px;
             width: 100%;
@@ -73,6 +110,8 @@
             opacity: 0;
             transform: translateY(15px);
             transition: opacity 0.6s ease, transform 0.5s ease;
+            position: relative;
+            z-index: 2;
         }
         .gallery.show {
             display: block;
@@ -85,7 +124,7 @@
             color: #4e3620;
             font-weight: 400;
             letter-spacing: 8px;
-            margin: 10px 0 10px;
+            margin: 10px 0 15px;
             font-size: 2.6rem;
             text-shadow: 3px 3px 0 #f0dbc0;
         }
@@ -97,7 +136,7 @@
             justify-content: center;
             align-items: flex-end;
             gap: 50px 80px;
-            margin: 10px 0 30px;
+            margin: 10px 0 20px;
         }
 
         .record-unit {
@@ -247,17 +286,45 @@
             box-shadow: 0 2px 6px rgba(150,100,50,0.1);
         }
 
-        /* ===== 翻页相册 + 电影屏幕 (复合区域) ===== */
+        /* ===== 独立电影屏幕 (居中，大尺寸) ===== */
+        .cinema-screen {
+            max-width: 1000px;
+            margin: 20px auto 30px;
+            background: #1a130e;
+            padding: 20px 20px 25px;
+            border-radius: 30px 8px 30px 8px;
+            box-shadow: 0 12px 22px rgba(0,0,0,0.4), inset 0 0 0 2px #c6a27a, inset 0 0 30px #000000aa;
+            border-bottom: 8px solid #836b54;
+        }
+        .screen-title {
+            color: #f3d9a4;
+            margin: 0 0 12px 20px;
+            font-size: 1.6rem;
+            letter-spacing: 5px;
+            text-shadow: 3px 3px 0 #3f2c1c;
+        }
+        #cinemaVideo {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            background: #000;
+            box-shadow: inset 0 0 40px #000, 0 0 0 4px #6b4f39;
+            display: block;
+            object-fit: contain;
+            aspect-ratio: 16/9;
+        }
+
+        /* ===== 翻页相册 + 大图预览 (下方区域) ===== */
         .album-book {
             display: flex;
             flex-wrap: wrap;
             gap: 30px;
-            margin: 10px 0 30px;
+            margin: 20px 0 30px;
         }
 
         /* 左侧书页 */
         .book-left {
-            flex: 1 1 320px;
+            flex: 1 1 350px;
             min-width: 280px;
             background: #f7e5d4;
             padding: 30px 25px 35px;
@@ -313,63 +380,29 @@
             letter-spacing: 3px;
         }
 
-        /* 右侧：电影屏幕 + 大图预览 —— 屏幕加大 */
-        .book-right {
-            flex: 2 1 550px;
-            min-width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* 电影院屏幕 —— 大幅提升高度，视频完整显示 */
-        .cinema-screen {
-            background: #1a130e;
-            padding: 18px 18px 22px;
-            border-radius: 30px 8px 30px 8px;
-            box-shadow: 0 12px 22px rgba(0,0,0,0.4), inset 0 0 0 2px #c6a27a, inset 0 0 30px #000000aa;
-            border-bottom: 8px solid #836b54;
-            flex: 0 0 auto;
-        }
-        .screen-title {
-            color: #f3d9a4;
-            margin: 0 0 12px 15px;
-            font-size: 1.4rem;
-            letter-spacing: 5px;
-            text-shadow: 3px 3px 0 #3f2c1c;
-        }
-        #cinemaVideo {
-            width: 100%;
-            height: auto;          /* 高度自动，完整显示 */
-            max-height: none;       /* 移除限制 */
-            border-radius: 16px;
-            background: #000;
-            box-shadow: inset 0 0 40px #000, 0 0 0 4px #6b4f39;
-            display: block;
-            object-fit: contain;    /* 确保视频比例不变形，完整显示 */
-            aspect-ratio: 16/9;     /* 预设宽高比，若视频比例不同仍可完整展示 */
-        }
-
-        /* 大图预览 (照片放大) */
+        /* 右侧大图预览 (原右侧区域) */
         .preview-area {
+            flex: 1 1 400px;
+            min-width: 300px;
             background: #fcf3e8;
-            padding: 20px 18px;
-            border-radius: 24px 8px 24px 8px;
+            padding: 25px 20px;
+            border-radius: 30px 8px 30px 8px;
             box-shadow: inset 0 1px 10px #ffeac2, 0 10px 20px rgba(140, 80, 30, 0.15);
             border: 1px solid #ebd1b0;
-            flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         .preview-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #7b5c42;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             font-style: italic;
+            text-align: center;
         }
         .preview-area img {
             max-width: 100%;
-            max-height: 280px;      /* 适当高度，不挤压屏幕 */
+            max-height: 350px;
             border-radius: 20px;
             box-shadow: 0 8px 18px rgba(0,0,0,0.15);
             border: 5px solid #ffffffd9;
@@ -395,6 +428,16 @@
             .vinyl-record { width: 180px; height: 180px; }
             .envelope .letter { font-size: 36px; }
             .envelope .icon { font-size: 100px; }
+            .cinema-screen { padding: 12px; }
+            .screen-title { font-size: 1.3rem; }
+        }
+
+        /* 移动端星空边缘缩小 (但保持可见) */
+        @media (max-width: 600px) {
+            body::before {
+                -webkit-mask: radial-gradient(circle at center, transparent 0, transparent calc(100% - 40px), black calc(100% - 40px));
+                mask: radial-gradient(circle at center, transparent 0, transparent calc(100% - 40px), black calc(100% - 40px));
+            }
         }
     </style>
 </head>
@@ -412,11 +455,10 @@
 
     <!-- 相册主体 -->
     <div class="gallery" id="albumGallery">
-        <h1>🎬 时光放映机 · 留声书</h1>
+        <h1>🎬 时光放映机 · 星空留声</h1>
 
-        <!-- 双唱片区域 (均带唱臂) -->
+        <!-- 双唱片区域 -->
         <div class="record-players">
-            <!-- 第一个唱片: 背景音乐 -->
             <div class="record-unit">
                 <div class="turntable" id="turntable1">
                     <div class="tonearm" id="tonearm1"></div>
@@ -430,8 +472,6 @@
                 </div>
                 <p>🎵 点击播放 · 背景旋律</p>
             </div>
-
-            <!-- 第二个唱片: 电影视频 -->
             <div class="record-unit">
                 <div class="turntable" id="turntable2">
                     <div class="tonearm" id="tonearm2"></div>
@@ -446,8 +486,17 @@
                 <p>🎞️ 点击放映 · 珍贵影像</p>
             </div>
         </div>
+
+        <!-- 独立电影屏幕 -->
+        <div class="cinema-screen">
+            <div class="screen-title">🎥 独家放映厅</div>
+            <video id="cinemaVideo" loop playsinline preload="metadata">
+                <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz%E8%A7%86%E9%A2%91/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+        </div>
         
-        <!-- 书本布局: 左侧翻页 + 右侧(电影屏幕+大图) -->
+        <!-- 下方：翻页相册 + 大图预览 -->
         <div class="album-book">
             <div class="book-left">
                 <div class="page-display">
@@ -458,29 +507,18 @@
                     <span class="page-indicator" id="pageIndicator">1 / 7</span>
                     <button class="page-btn" id="nextBtn" onclick="nextPage()" title="下一页">→</button>
                 </div>
-                <p style="text-align:center; margin-top:15px; color:#6f4e34; font-size:1rem;">✨ 点击照片也可翻页</p>
+                <p style="text-align:center; margin-top:15px; color:#6f4e34;">✨ 点击照片也可翻页</p>
             </div>
 
-            <div class="book-right">
-                <!-- 电影屏幕 (放大版) -->
-                <div class="cinema-screen">
-                    <div class="screen-title">🎥 独家放映厅</div>
-                    <video id="cinemaVideo" loop playsinline preload="metadata">
-                        <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz%E8%A7%86%E9%A2%91/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
-                        您的浏览器不支持视频播放。
-                    </video>
-                </div>
-                <!-- 照片大图预览 -->
-                <div class="preview-area">
-                    <div class="preview-title">🔍 放大 · 珍藏细节</div>
-                    <img id="bigImg" src="" alt="点击翻页查看大图">
-                </div>
+            <div class="preview-area">
+                <div class="preview-title">🔍 放大 · 珍藏细节</div>
+                <img id="bigImg" src="" alt="点击翻页查看大图">
             </div>
         </div>
         <div class="footer-note">—— 故事在唱片里，影像在银幕上 ——</div>
     </div>
 
-    <!-- 隐藏的背景音频 (第一个唱片专用) -->
+    <!-- 隐藏的背景音频 -->
     <audio id="bgAudio" loop preload="auto">
         <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz%E8%A7%86%E9%A2%91/%E6%B7%B1%E6%83%85%E5%91%8A%E7%99%BD%EF%BC%8C%E7%88%B1%E5%9C%A8%E5%BF%83%E5%A4%B4.m4a" type="audio/mp4">
     </audio>
@@ -489,7 +527,6 @@
         (function(){
             "use strict";
 
-            // 照片数据
             const photoList = [
                 "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true",
                 "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true",
@@ -524,7 +561,6 @@
             window.prevPage = () => { if (currentIndex > 0) updatePage(currentIndex-1); };
             window.showImg = () => {};
 
-            // 信封打开
             window.openAlbum = () => {
                 document.querySelector('.envelope').classList.add('hide');
                 document.querySelector('.gallery').classList.add('show');
@@ -551,7 +587,6 @@
             video.addEventListener('pause', () => { vinyl2.classList.remove('spin'); turntable2.classList.remove('playing'); });
             window.toggleVideoPlay = () => video.paused ? video.play() : video.pause();
 
-            // 键盘翻页
             window.addEventListener('keydown', (e) => {
                 if (!document.querySelector('.gallery.show')) return;
                 if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
