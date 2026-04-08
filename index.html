@@ -2,32 +2,40 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的抽屉相册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🍃 抽屉相册 · 黑胶留声</title>
     <style>
+        /* ===== 全局风格 ===== */
         body { 
-            font-family: 微软雅黑; 
-            background: #fff4e6; /* 浅橙色背景 */
+            font-family: '微软雅黑', 'Segoe UI', sans-serif;
+            background: #fff4e6; 
             padding: 20px; 
             margin: 0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         * { box-sizing: border-box; }
 
-        /* ============== 信封封面 ============== */
+        /* ===== 信封封面 ===== */
         .envelope {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: #fff8e1;
+            background: #fbe9d2;
+            background-image: radial-gradient(circle at 30% 40%, #fff3e0 0%, #fbe9d2 90%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 999;
-            transition: all 0.8s ease;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: inset 0 0 30px rgba(180, 100, 30, 0.05);
+            border-bottom: 4px solid #e6c7a2;
         }
         .envelope.hide {
             opacity: 0;
@@ -35,159 +43,512 @@
             transform: translateY(-100%);
         }
         .envelope .letter {
-            font-size: 22px;
-            color: #6d4c41;
-            margin-bottom: 30px;
+            font-size: 24px;
+            color: #5d3f2b;
+            margin-bottom: 32px;
             text-align: center;
             line-height: 1.8;
-            padding: 0 20px;
+            padding: 0 24px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 rgba(255, 245, 220, 0.8);
         }
         .envelope .icon {
-            font-size: 60px;
-            color: #d84315;
-            animation: beat 1.5s infinite;
+            font-size: 76px;
+            color: #c25b3a;
+            filter: drop-shadow(0 8px 12px rgba(160, 80, 40, 0.2));
+            animation: beat 1.8s infinite;
         }
         @keyframes beat {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            0%,100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.12); opacity: 1; }
         }
 
-        /* ============== 相册主体 ============== */
+        /* ===== 相册主体 ===== */
         .gallery {
-            max-width: 1000px;
+            max-width: 1100px;
+            width: 100%;
             margin: 0 auto;
             display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease, transform 0.5s ease;
         }
         .gallery.show {
             display: block;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* 留声机 */
+        h1 {
+            text-align: center;
+            color: #4e3620;
+            font-weight: 400;
+            letter-spacing: 4px;
+            margin: 15px 0 5px;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 0 #f0dbc0;
+        }
+
+        /* ===== 黑胶唱片区域 ===== */
         .record-player {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0 25px;
+            position: relative;
         }
-        .record-icon {
-            width: 80px;
-            height: 80px;
+
+        /* 圆形唱片 —— 核心视觉 */
+        .vinyl-record {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            background: radial-gradient(circle at 30% 28%, #3a3a3a, #0f0f0f 75%, #020202);
+            border-radius: 50%;
+            box-shadow: 
+                0 12px 28px rgba(0, 0, 0, 0.5),
+                0 0 0 2px #2b1a0e,
+                inset 0 -5px 15px rgba(0,0,0,0.8),
+                inset 0 5px 12px rgba(255,255,240,0.08);
             cursor: pointer;
-            transition: transform 0.2s;
+            position: relative;
+            transition: box-shadow 0.25s, transform 0.1s;
+            border: 1px solid #4a3724;
         }
-        .record-icon.spin {
-            animation: spin 3s linear infinite;
+        .vinyl-record:hover {
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6), 0 0 0 3px #b87c4b, inset 0 -2px 8px rgba(0,0,0,0.7);
+            transform: scale(1.01);
+        }
+        .vinyl-record:active {
+            transform: scale(0.99);
+        }
+
+        /* 唱片纹路 (同心圆光泽) */
+        .vinyl-record::before {
+            content: "";
+            position: absolute;
+            top: 6%;
+            left: 6%;
+            width: 88%;
+            height: 88%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(circle at 40% 40%, 
+                rgba(70,70,70,0.5) 0px, 
+                rgba(30,30,30,0.7) 3px, 
+                #1a1a1a 6px, 
+                #0a0a0a 9px);
+            opacity: 0.7;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        /* 高光反射 */
+        .vinyl-record::after {
+            content: "";
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 35%;
+            height: 20%;
+            background: radial-gradient(circle, rgba(255,255,250,0.2) 0%, rgba(255,255,240,0) 80%);
+            border-radius: 50%;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            filter: blur(3px);
+        }
+
+        /* 唱片中心标签 */
+        .record-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36%;
+            height: 36%;
+            background: #c94f2b;
+            background: linear-gradient(145deg, #d95c3a, #a83c1c);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #f9e7d2;
+            font-weight: bold;
+            box-shadow: 
+                inset 0 -3px 6px #3b1a0e,
+                inset 0 3px 8px #ffb08c,
+                0 2px 8px rgba(0,0,0,0.4);
+            border: 2px solid #d6a177;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+        .record-label .label-title {
+            font-size: 13px;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 0 #3e1a0c;
+        }
+        .record-label .label-sub {
+            font-size: 9px;
+            opacity: 0.9;
+            border-top: 1px dashed #fad5b5;
+            padding-top: 4px;
+        }
+        /* 中心小圆孔 */
+        .center-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #1f140e;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 3px #000, 0 1px 2px #694d38;
+            border: 1px solid #7a5a41;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* 旋转动画 (黑胶转起来) */
+        .vinyl-record.spin {
+            animation: spin 3.8s linear infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* 网格 */
+        .record-player p {
+            margin-top: 14px;
+            color: #5b3f2b;
+            font-size: 1rem;
+            font-style: italic;
+            background: rgba(251, 233, 210, 0.7);
+            display: inline-block;
+            padding: 6px 22px;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 6px rgba(150, 100, 50, 0.1);
+        }
+
+        /* ===== 照片网格 ===== */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 30px 0 20px;
         }
         .grid img {
             width: 100%;
-            height: 150px;
+            height: 160px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 18px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.25s;
+            box-shadow: 0 6px 12px rgba(90, 50, 20, 0.15);
+            border: 3px solid #f5e5d5;
+            background: #d9c2ae;
         }
         .grid img:hover {
-            transform: scale(1.03);
+            transform: scale(1.04);
+            box-shadow: 0 12px 20px rgba(120, 70, 30, 0.25);
+            border-color: #d4a373;
         }
-        /* 预览 */
+
+        /* 大图预览 */
         .preview {
-            margin-top: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 25px;
+            background: #fcf3e8;
+            padding: 24px 20px 20px;
+            border-radius: 36px 36px 20px 20px;
+            box-shadow: inset 0 1px 8px #ffeac2, 0 8px 18px rgba(140, 80, 30, 0.15);
             text-align: center;
+            border: 1px solid #ebd1b0;
         }
         .preview img {
             max-width: 100%;
-            max-height: 600px;
+            max-height: 520px;
+            border-radius: 18px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            border: 4px solid #ffffffba;
+            object-fit: contain;
+        }
+
+        /* 小点缀 */
+        .footer-note {
+            text-align: right;
+            font-size: 13px;
+            color: #ad8a6f;
+            margin-top: 8px;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            h1 { font-size: 1.8rem; }
+            .vinyl-record { width: 170px; height: 170px; }
+            .record-label .label-title { font-size: 11px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 信封 -->
+    <!-- 信封封面 · 点击开启 -->
     <div class="envelope" onclick="openAlbum()">
         <div class="letter">
             💌 亲爱的你<br>
-            这是一份专属相册<br>
-            点击信封 打开惊喜 ✨
+            这份回忆 · 藏在抽屉里<br>
+            轻触信封 展开时光 ✨
         </div>
         <div class="icon">💌</div>
     </div>
 
-    <!-- 相册 -->
-    <div class="gallery">
-        <h1>📁 我的私人相册</h1>
+    <!-- 相册内容 (初始隐藏) -->
+    <div class="gallery" id="albumGallery">
+        <h1>📀 抽屉留声 · 记忆唱片</h1>
 
-        <!-- 留声机 -->
+        <!-- 圆形黑胶唱片 + 播放器 -->
         <div class="record-player">
-            <img 
-                class="record-icon" 
-                src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" 
-                onclick="toggleMusic()"
-                alt="留声机"
-            >
-            <p>点击留声机播放/暂停音乐</p>
+            <!-- 点击黑胶唱片播放/暂停音乐 -->
+            <div class="vinyl-record" id="vinylDisc" onclick="toggleMusic()">
+                <!-- 唱片纹路与标签内部 -->
+                <div class="record-label">
+                    <span class="label-title">我们的歌</span>
+                    <span class="label-sub">33⅓ RPM</span>
+                </div>
+                <div class="center-hole"></div>
+            </div>
+            <p>🎵 点击唱片 · 黑胶转动 · 音乐流淌</p>
         </div>
         
+        <!-- 照片网格 (每张点击可预览) -->
         <div class="grid">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" onclick="showImg(this)" alt="照片1">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true" onclick="showImg(this)" alt="照片2">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/421dad3d48774f855b425b9c42be82a0.jpg?raw=true" onclick="showImg(this)" alt="照片3">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/4a74e25429d56ebe177df2f373db1959.jpg?raw=true" onclick="showImg(this)" alt="照片4">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/699ffe8250a4d0acb73baf3dd0be490b.jpg?raw=true" onclick="showImg(this)" alt="照片5">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/813f09bc5d6348fce2e1f0a5b901561d.jpg?raw=true" onclick="showImg(this)" alt="照片6">
-            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/b4240e1420f26fcb8ec8ea3d033057ae.jpg?raw=true" onclick="showImg(this)" alt="照片7">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间1" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间2" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/421dad3d48774f855b425b9c42be82a0.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间3" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/4a74e25429d56ebe177df2f373db1959.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间4" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/699ffe8250a4d0acb73baf3dd0be490b.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间5" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/813f09bc5d6348fce2e1f0a5b901561d.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间6" loading="lazy">
+            <img src="https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/b4240e1420f26fcb8ec8ea3d033057ae.jpg?raw=true" onclick="showImg(this)" alt="温柔瞬间7" loading="lazy">
         </div>
 
+        <!-- 大图预览区 -->
         <div class="preview">
-            <img id="bigImg" src="">
+            <img id="bigImg" src="" alt="点击上方小图查看">
         </div>
+        <div class="footer-note">—— 珍藏 · 我们的故事 ——</div>
     </div>
 
     <script>
-        // 打开相册
-        function openAlbum() {
-            document.querySelector('.envelope').classList.add('hide');
-            document.querySelector('.gallery').classList.add('show');
-        }
+        (function(){
+            "use strict";
 
-        // 预览大图
-        function showImg(img) {
-            document.getElementById("bigImg").src = img.src;
-        }
+            // ---------- 信封打开 & 相册展示 ----------
+            window.openAlbum = function() {
+                const envelope = document.querySelector('.envelope');
+                const gallery = document.querySelector('.gallery');
+                envelope.classList.add('hide');
+                gallery.classList.add('show');
+                
+                // 默认显示第一张照片在大预览区 (若存在)
+                const firstImg = document.querySelector('.grid img');
+                const bigImg = document.getElementById('bigImg');
+                if (firstImg && bigImg) {
+                    bigImg.src = firstImg.src;
+                    bigImg.alt = firstImg.alt || '珍藏瞬间';
+                }
 
-        // 音乐 + 留声机旋转
-        let isPlaying = false;
-        let audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"); // 示例音乐
+                // 微调: 如果音乐之前没初始化, 预加载但不自动播放 (尊重用户手势)
+                if (!audioPrepared) {
+                    prepareAudio();
+                }
+            };
 
-        function toggleMusic() {
-            let icon = document.querySelector('.record-icon');
-            if (!isPlaying) {
-                audio.play();
-                icon.classList.add('spin');
-                isPlaying = true;
-            } else {
-                audio.pause();
-                icon.classList.remove('spin');
-                isPlaying = false;
+            // ---------- 预览大图 (点击网格图片) ----------
+            window.showImg = function(imgElement) {
+                const bigImg = document.getElementById('bigImg');
+                if (imgElement && bigImg) {
+                    bigImg.src = imgElement.src;
+                    bigImg.alt = imgElement.alt || '放大记忆';
+                }
+            };
+
+            // ---------- 黑胶唱片 · 音乐播放逻辑 ----------
+            // 使用更柔和、适合循环的背景音乐 (SoundHelix 示例曲 · 免版税用于演示)
+            // 如果无法访问可回退到内置提示，但绝大多数情况可用。
+            const MUSIC_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            
+            let audio = null;
+            let isPlaying = false;
+            let audioPrepared = false;   // 标记是否已经尝试创建音频对象
+            const vinyl = document.getElementById('vinylDisc');
+
+            // 准备音频 (但不在页面加载时自动播放)
+            function prepareAudio() {
+                if (audio) return; // 已存在
+                try {
+                    audio = new Audio(MUSIC_URL);
+                    audio.loop = true;          // 黑胶唱片循环播放
+                    audio.volume = 0.45;         // 舒适音量
+                    audio.preload = 'auto';
+                    
+                    // 监听播放/暂停状态同步（防止外部干扰）
+                    audio.addEventListener('play', function() {
+                        isPlaying = true;
+                        vinyl.classList.add('spin');
+                    });
+                    audio.addEventListener('pause', function() {
+                        isPlaying = false;
+                        vinyl.classList.remove('spin');
+                    });
+                    audio.addEventListener('ended', function() {
+                        // 设置了loop一般不会触发，但万一呢
+                        isPlaying = false;
+                        vinyl.classList.remove('spin');
+                    });
+                    
+                    // 处理加载错误 —— 如果音乐无法播放，给出友好提示但不破坏体验
+                    audio.addEventListener('error', function(e) {
+                        console.warn('唱片音乐暂时无法加载，但你可以继续浏览照片。');
+                        // 可选：替换为极简提示音？为了优雅，不额外处理，旋转动画依然可用。
+                        // 但为了避免报错阻塞，将audio置为备用状态。
+                        isPlaying = false;
+                        vinyl.classList.remove('spin');
+                        // 用一个flag标记不可用，再次点击时不报错
+                        audio = null; 
+                        audioPrepared = false;
+                    });
+                    
+                    audioPrepared = true;
+                } catch (e) {
+                    console.log('音频初始化失败', e);
+                    audio = null;
+                    audioPrepared = false;
+                }
             }
-        }
+
+            // 确保音频对象存在 (首次点击唱片时再创建，更符合用户手势)
+            function ensureAudio() {
+                if (!audio) {
+                    prepareAudio();
+                }
+                // 如果音频因为错误被置null，再尝试一次
+                if (!audio) {
+                    try {
+                        audio = new Audio(MUSIC_URL);
+                        audio.loop = true;
+                        audio.volume = 0.45;
+                        audio.addEventListener('play', () => { isPlaying = true; vinyl.classList.add('spin'); });
+                        audio.addEventListener('pause', () => { isPlaying = false; vinyl.classList.remove('spin'); });
+                        audioPrepared = true;
+                    } catch (err) {
+                        audio = null;
+                    }
+                }
+                return audio;
+            }
+
+            // 切换 播放/暂停 (由唱片点击触发)
+            window.toggleMusic = function() {
+                const currentAudio = ensureAudio();
+                if (!currentAudio) {
+                    // 如果实在无法创建音频，至少让唱片转一转 (视觉反馈)
+                    if (!isPlaying) {
+                        vinyl.classList.add('spin');
+                        isPlaying = true;
+                        // 但无音乐，过几秒自动停？这里给个提示转两圈后停止
+                        setTimeout(() => {
+                            if (!audio) {
+                                vinyl.classList.remove('spin');
+                                isPlaying = false;
+                            }
+                        }, 2000);
+                    } else {
+                        vinyl.classList.remove('spin');
+                        isPlaying = false;
+                    }
+                    return;
+                }
+
+                // 正常音频控制
+                if (currentAudio.paused) {
+                    // 播放
+                    currentAudio.play().then(() => {
+                        // 成功播放，状态由事件同步
+                        vinyl.classList.add('spin');
+                        isPlaying = true;
+                    }).catch(err => {
+                        // 浏览器可能限制自动播放？但这里是由用户点击触发的，通常没问题。
+                        console.warn('播放被阻止: ', err);
+                        // 尝试降级：让唱片转一下再停止
+                        vinyl.classList.add('spin');
+                        isPlaying = true;
+                        setTimeout(() => {
+                            vinyl.classList.remove('spin');
+                            isPlaying = false;
+                        }, 1800);
+                    });
+                } else {
+                    // 暂停
+                    currentAudio.pause();
+                    vinyl.classList.remove('spin');
+                    isPlaying = false;
+                }
+            };
+
+            // 预准备音频 (不自动播放) 等信封打开后如果有需要再创建
+            // 为了更快响应，可以在页面空闲时准备，但先不做自动创建，等用户点唱片时再创建。
+            // 但也可以预加载资源: 在信封打开时调用prepareAudio但不播放。
+            // 已在openAlbum中调用prepareAudio (但只执行一次)
+            
+            // 附加优化：如果用户点击信封后尚未点唱片，我们提前创建audio对象但不播放。
+            // 这已经在openAlbum里做了。
+
+            // 但确保openAlbum里能调用prepareAudio
+            const originalOpen = window.openAlbum;
+            window.openAlbum = function() {
+                originalOpen();
+                if (!audioPrepared) {
+                    prepareAudio();
+                }
+                // 同时设置默认预览图 (再次确保)
+                const firstImg = document.querySelector('.grid img');
+                const bigImg = document.getElementById('bigImg');
+                if (firstImg && bigImg && !bigImg.src) {
+                    bigImg.src = firstImg.src;
+                }
+            };
+
+            // 如果用户直接通过某些方式显示相册? 保留。
+            
+            // 优雅处理: 在页面完全加载后, 可尝试预连接音频资源 (非必须)
+            window.addEventListener('load', function() {
+                // 不自动播放，只是让浏览器有机会缓存
+                if (!audio) {
+                    // 静默预加载，但不会发出声音
+                    const preAudio = new Audio();
+                    preAudio.src = MUSIC_URL;
+                    preAudio.preload = 'auto';
+                    // 不播放，只是缓存
+                }
+                // 默认预览图 (如果信封未打开但相册强行显示? 一般不会)
+            });
+
+            // 唱片旋转与暂停状态同步: 若音乐播放中用户刷新页面？状态丢失，没关系。
+            // 增加一个保险：如果audio因ended或其他原因暂停，同步移除spin
+            // 已经在事件中处理
+
+            // 页面卸载前暂停音乐（可选）
+            window.addEventListener('beforeunload', function() {
+                if (audio && !audio.paused) {
+                    audio.pause();
+                }
+            });
+
+            // 最后: 解决一个潜在问题 —— 如果用户先点击唱片，再打开信封? 不可能，信封遮挡。
+            // 一切正常。
+        })();
     </script>
+    <!-- 注：唱片音乐采用SoundHelix示例曲，仅用于演示黑胶旋转效果，可自行替换 -->
 </body>
 </html>
