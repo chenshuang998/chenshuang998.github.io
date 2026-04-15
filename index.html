@@ -16,18 +16,15 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            /* 星空边缘：使用伪元素叠加 */
         }
         * { box-sizing: border-box; }
 
-        /* 星空边缘 (约2cm = 75px) */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 1;
-            /* 深色星空背景 + 星星 */
             background: radial-gradient(2px 2px at 15% 8%, #ffe8c7, transparent 80%),
                         radial-gradient(3px 3px at 85% 12%, #f0dbb0, transparent 80%),
                         radial-gradient(2px 2px at 22% 92%, #ffe3b5, transparent 80%),
@@ -40,384 +37,185 @@
                         radial-gradient(2px 2px at 8% 75%, #fad9a3, transparent 80%),
                         radial-gradient(4px 4px at 48% 15%, #ffe0b7, transparent 80%),
                         radial-gradient(3px 3px at 55% 82%, #f2d19e, transparent 80%),
-                        /* 再加一些深色底纹，让星星更明显 */
                         repeating-linear-gradient(45deg, rgba(25, 20, 15, 0.08) 0px, rgba(25, 20, 15, 0.08) 2px, 
                         transparent 2px, transparent 8px);
-            background-color: #1f1a14;  /* 深色基底 */
-            /* 使用 mask 让边缘2cm显示，中心透明 */
-            -webkit-mask: radial-gradient(circle at center, 
-                transparent 0, 
-                transparent calc(100% - 75px), 
-                black calc(100% - 75px));
-            mask: radial-gradient(circle at center, 
-                transparent 0, 
-                transparent calc(100% - 75px), 
-                black calc(100% - 75px));
+            background-color: #1f1a14;
+            -webkit-mask: radial-gradient(circle at center, transparent 0, transparent calc(100% - 75px), black calc(100% - 75px));
+            mask: radial-gradient(circle at center, transparent 0, transparent calc(100% - 75px), black calc(100% - 75px));
         }
 
-        /* ===== 放大版信封 ===== */
         .envelope {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
+            top: 0; left: 0; width: 100%; height: 100vh;
             background: #fbe9d2;
             background-image: radial-gradient(circle at 30% 40%, #fff3e0 0%, #fbe9d2 90%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 999;
             transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: inset 0 0 60px rgba(180, 100, 30, 0.1);
             border-bottom: 8px solid #e6c7a2;
         }
-        .envelope.hide {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-100%);
-        }
+        .envelope.hide { opacity: 0; pointer-events: none; transform: translateY(-100%); }
         .envelope .letter {
-            font-size: 48px;
-            color: #5d3f2b;
-            margin-bottom: 50px;
-            text-align: center;
-            line-height: 1.6;
-            padding: 0 40px;
-            font-weight: 400;
-            letter-spacing: 6px;
+            font-size: 48px; color: #5d3f2b; margin-bottom: 50px; text-align: center; line-height: 1.6;
+            padding: 0 40px; font-weight: 400; letter-spacing: 6px;
             text-shadow: 4px 4px 0 rgba(255, 245, 220, 0.9);
         }
         .envelope .icon {
-            font-size: 130px;
-            color: #c25b3a;
+            font-size: 130px; color: #c25b3a;
             filter: drop-shadow(0 16px 20px rgba(160, 80, 40, 0.3));
             animation: beat 1.8s infinite;
         }
-        @keyframes beat {
-            0%,100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
+        @keyframes beat { 0%,100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.1); opacity: 1; } }
 
-        /* ===== 相册主体 (置于星空之上) ===== */
         .gallery {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            display: none;
-            opacity: 0;
-            transform: translateY(15px);
+            max-width: 1400px; width: 100%; margin: 0 auto;
+            display: none; opacity: 0; transform: translateY(15px);
             transition: opacity 0.6s ease, transform 0.5s ease;
-            position: relative;
-            z-index: 2;
+            position: relative; z-index: 2;
         }
-        .gallery.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .gallery.show { display: block; opacity: 1; transform: translateY(0); }
 
         h1 {
-            text-align: center;
-            color: #4e3620;
-            font-weight: 400;
-            letter-spacing: 8px;
-            margin: 10px 0 15px;
-            font-size: 2.6rem;
-            text-shadow: 3px 3px 0 #f0dbc0;
+            text-align: center; color: #4e3620; font-weight: 400; letter-spacing: 8px;
+            margin: 10px 0 15px; font-size: 2.6rem; text-shadow: 3px 3px 0 #f0dbc0;
         }
 
-        /* ===== 双唱片布局 ===== */
         .record-players {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 50px 80px;
-            margin: 10px 0 20px;
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
+            gap: 50px 80px; margin: 10px 0 20px;
         }
+        .record-unit { display: flex; flex-direction: column; align-items: center; }
+        .turntable { position: relative; width: 230px; height: 230px; margin-bottom: 8px; }
 
-        .record-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .turntable {
-            position: relative;
-            width: 230px;
-            height: 230px;
-            margin-bottom: 8px;
-        }
-
-        /* 唱臂 */
         .tonearm {
-            position: absolute;
-            top: 20px;
-            right: 10px;
-            width: 100px;
-            height: 14px;
+            position: absolute; top: 20px; right: 10px; width: 100px; height: 14px;
             background: linear-gradient(145deg, #c0c0c0, #7a7a7a);
             border-radius: 20px 4px 4px 20px;
             box-shadow: -2px 3px 6px rgba(0,0,0,0.3), inset 0 1px 3px #e0e0e0;
-            transform-origin: 100% 50%;
-            transform: rotate(25deg);
+            transform-origin: 100% 50%; transform: rotate(25deg);
             transition: transform 0.4s cubic-bezier(0.34, 1.3, 0.7, 1);
-            z-index: 10;
-            border-left: 3px solid #444;
-            pointer-events: none;
+            z-index: 10; border-left: 3px solid #444; pointer-events: none;
         }
         .tonearm::before {
-            content: "";
-            position: absolute;
-            right: -6px;
-            top: 2px;
-            width: 20px;
-            height: 10px;
-            background: #b0b0b0;
-            border-radius: 30% 10% 10% 30%;
-            box-shadow: inset -1px 0 2px #555;
+            content: ""; position: absolute; right: -6px; top: 2px; width: 20px; height: 10px;
+            background: #b0b0b0; border-radius: 30% 10% 10% 30%; box-shadow: inset -1px 0 2px #555;
         }
         .tonearm::after {
-            content: "";
-            position: absolute;
-            left: 10px;
-            top: -3px;
-            width: 14px;
-            height: 18px;
-            background: #6a6a6a;
-            border-radius: 4px 8px 2px 4px;
+            content: ""; position: absolute; left: 10px; top: -3px; width: 14px; height: 18px;
+            background: #6a6a6a; border-radius: 4px 8px 2px 4px;
             box-shadow: inset 0 2px 3px #222, 0 2px 2px rgba(0,0,0,0.2);
         }
-        .turntable.playing .tonearm {
-            transform: rotate(5deg);
-        }
+        .turntable.playing .tonearm { transform: rotate(5deg); }
 
-        /* 黑胶唱片 */
         .vinyl-record {
-            width: 210px;
-            height: 210px;
-            margin: 10px;
+            width: 210px; height: 210px; margin: 10px;
             background: radial-gradient(circle at 30% 28%, #3a3a3a, #0f0f0f 75%, #020202);
             border-radius: 50%;
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 0 2px #2b1a0e, inset 0 -5px 15px rgba(0,0,0,0.8);
-            cursor: pointer;
-            position: relative;
-            transition: box-shadow 0.25s, transform 0.1s;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.6), 0 0 0 2px #2b1a0e, inset 0 -5px 15px rgba(0,0,0,0.8);
+            cursor: pointer; position: relative; transition: box-shadow 0.25s, transform 0.1s;
             border: 1px solid #4a3724;
         }
         .vinyl-record:hover {
-            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.7), 0 0 0 3px #b87c4b;
-            transform: scale(1.02);
+            box-shadow: 0 18px 36px rgba(0,0,0,0.7), 0 0 0 3px #b87c4b; transform: scale(1.02);
         }
         .vinyl-record::before {
-            content: "";
-            position: absolute;
-            top: 6%; left: 6%; width: 88%; height: 88%;
+            content: ""; position: absolute; top: 6%; left: 6%; width: 88%; height: 88%;
             border-radius: 50%;
             background: repeating-radial-gradient(circle at 40% 40%, rgba(70,70,70,0.5) 0px, rgba(30,30,30,0.7) 3px, #1a1a1a 6px, #0a0a0a 9px);
-            opacity: 0.7;
-            mix-blend-mode: overlay;
-            pointer-events: none;
+            opacity: 0.7; mix-blend-mode: overlay; pointer-events: none;
         }
         .vinyl-record::after {
-            content: "";
-            position: absolute;
-            top: 10%; left: 15%; width: 35%; height: 20%;
+            content: ""; position: absolute; top: 10%; left: 15%; width: 35%; height: 20%;
             background: radial-gradient(circle, rgba(255,255,250,0.25) 0%, rgba(255,255,240,0) 80%);
-            border-radius: 50%;
-            transform: rotate(-15deg);
-            pointer-events: none;
-            filter: blur(3px);
+            border-radius: 50%; transform: rotate(-15deg); pointer-events: none; filter: blur(3px);
         }
         .record-label {
-            position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 38%; height: 38%;
-            background: linear-gradient(145deg, #d95c3a, #a83c1c);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #f9e7d2;
-            font-weight: bold;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 38%; height: 38%; background: linear-gradient(145deg, #d95c3a, #a83c1c);
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #f9e7d2; font-weight: bold;
             box-shadow: inset 0 -3px 6px #3b1a0e, inset 0 3px 8px #ffb08c, 0 2px 8px rgba(0,0,0,0.4);
-            border: 2px solid #d6a177;
-            pointer-events: none;
+            border: 2px solid #d6a177; pointer-events: none;
         }
-        .record-label .label-title {
-            font-size: 16px;
-            margin-bottom: 2px;
-            text-shadow: 1px 1px 0 #3e1a0c;
-        }
-        .record-label .label-sub {
-            font-size: 10px;
-            opacity: 0.9;
-            border-top: 1px dashed #fad5b5;
-            padding-top: 4px;
-        }
+        .record-label .label-title { font-size: 16px; margin-bottom: 2px; text-shadow: 1px 1px 0 #3e1a0c; }
+        .record-label .label-sub { font-size: 10px; opacity: 0.9; border-top: 1px dashed #fad5b5; padding-top: 4px; }
         .center-hole {
-            position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 12px; height: 12px;
-            background: #1f140e;
-            border-radius: 50%;
-            box-shadow: inset 0 2px 3px #000;
-            border: 1px solid #7a5a41;
-            z-index: 5;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 12px; height: 12px; background: #1f140e; border-radius: 50%;
+            box-shadow: inset 0 2px 3px #000; border: 1px solid #7a5a41; z-index: 5;
         }
-        .vinyl-record.spin {
-            animation: spin 3.8s linear infinite;
-        }
+        .vinyl-record.spin { animation: spin 3.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .record-unit p {
-            margin-top: 8px;
-            color: #5b3f2b;
-            font-size: 1.1rem;
-            font-style: italic;
-            background: rgba(251, 233, 210, 0.85);
-            padding: 6px 24px;
-            border-radius: 40px;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 2px 6px rgba(150,100,50,0.1);
+            margin-top: 8px; color: #5b3f2b; font-size: 1.1rem; font-style: italic;
+            background: rgba(251, 233, 210, 0.85); padding: 6px 24px; border-radius: 40px;
+            backdrop-filter: blur(2px); box-shadow: 0 2px 6px rgba(150,100,50,0.1);
         }
 
-        /* ===== 独立电影屏幕 (居中，大尺寸) ===== */
         .cinema-screen {
-            max-width: 1000px;
-            margin: 20px auto 30px;
-            background: #1a130e;
-            padding: 20px 20px 25px;
+            max-width: 1000px; margin: 20px auto 30px; background: #1a130e; padding: 20px 20px 25px;
             border-radius: 30px 8px 30px 8px;
             box-shadow: 0 12px 22px rgba(0,0,0,0.4), inset 0 0 0 2px #c6a27a, inset 0 0 30px #000000aa;
             border-bottom: 8px solid #836b54;
         }
         .screen-title {
-            color: #f3d9a4;
-            margin: 0 0 12px 20px;
-            font-size: 1.6rem;
-            letter-spacing: 5px;
+            color: #f3d9a4; margin: 0 0 12px 20px; font-size: 1.6rem; letter-spacing: 5px;
             text-shadow: 3px 3px 0 #3f2c1c;
         }
         #cinemaVideo {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-            background: #000;
-            box-shadow: inset 0 0 40px #000, 0 0 0 4px #6b4f39;
-            display: block;
-            object-fit: contain;
-            aspect-ratio: 16/9;
+            width: 100%; height: auto; border-radius: 16px; background: #000;
+            box-shadow: inset 0 0 40px #000, 0 0 0 4px #6b4f39; display: block;
+            object-fit: contain; aspect-ratio: 16/9;
         }
 
-        /* ===== 翻页相册 + 大图预览 (下方区域) ===== */
-        .album-book {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin: 20px 0 30px;
-        }
+        .album-book { display: flex; flex-wrap: wrap; gap: 30px; margin: 20px 0 30px; }
 
-        /* 左侧书页 */
         .book-left {
-            flex: 1 1 350px;
-            min-width: 280px;
-            background: #f7e5d4;
-            padding: 30px 25px 35px;
+            flex: 1 1 350px; min-width: 280px; background: #f7e5d4; padding: 30px 25px 35px;
             border-radius: 30px 8px 30px 8px;
             box-shadow: inset 0 0 0 1px #fef3e9, 10px 14px 24px rgba(120, 70, 30, 0.2), 0 0 0 2px #dbbc9b;
             border-left: 8px solid #b58763;
         }
         .page-display { text-align: center; }
         .page-image {
-            width: 100%;
-            aspect-ratio: 4/3;
-            object-fit: cover;
-            border-radius: 16px;
-            box-shadow: 0 8px 18px rgba(60, 30, 10, 0.3);
-            border: 6px solid #f9efdf;
-            background: #d4bba3;
-            cursor: pointer;
+            width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 16px;
+            box-shadow: 0 8px 18px rgba(60, 30, 10, 0.3); border: 6px solid #f9efdf;
+            background: #d4bba3; cursor: pointer;
         }
-        .page-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 25px;
-            gap: 25px;
-        }
+        .page-controls { display: flex; align-items: center; justify-content: center; margin-top: 25px; gap: 25px; }
         .page-btn {
-            background: #dbb594;
-            border: none;
-            color: #3d2a1b;
-            font-size: 2.2rem;
-            font-weight: bold;
-            width: 60px; height: 60px;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            box-shadow: 0 5px 0 #7a5d47, 0 8px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.1s;
-            border: 1px solid #edcbb2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #dbb594; border: none; color: #3d2a1b; font-size: 2.2rem; font-weight: bold;
+            width: 60px; height: 60px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            box-shadow: 0 5px 0 #7a5d47, 0 8px 12px rgba(0,0,0,0.15); cursor: pointer;
+            transition: all 0.1s; border: 1px solid #edcbb2; display: flex;
+            align-items: center; justify-content: center;
         }
         .page-btn:hover { background: #e7c2a4; transform: translateY(-3px); box-shadow: 0 8px 0 #7a5d47, 0 10px 16px rgba(0,0,0,0.15); }
         .page-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a5d47, 0 6px 10px rgba(0,0,0,0.1); }
         .page-btn:disabled { opacity: 0.4; transform: none; box-shadow: 0 5px 0 #7a5d47; pointer-events: none; background: #c2aa96; }
         .page-indicator {
-            font-size: 1.5rem;
-            color: #4b311e;
-            background: #f4e5d7;
-            padding: 10px 24px;
-            border-radius: 40px;
-            box-shadow: inset 0 1px 6px #ccb7a3;
-            font-weight: 600;
-            letter-spacing: 3px;
+            font-size: 1.5rem; color: #4b311e; background: #f4e5d7; padding: 10px 24px;
+            border-radius: 40px; box-shadow: inset 0 1px 6px #ccb7a3; font-weight: 600; letter-spacing: 3px;
         }
 
-        /* 右侧大图预览 (原右侧区域) */
         .preview-area {
-            flex: 1 1 400px;
-            min-width: 300px;
-            background: #fcf3e8;
-            padding: 25px 20px;
+            flex: 1 1 400px; min-width: 300px; background: #fcf3e8; padding: 25px 20px;
             border-radius: 30px 8px 30px 8px;
             box-shadow: inset 0 1px 10px #ffeac2, 0 10px 20px rgba(140, 80, 30, 0.15);
-            border: 1px solid #ebd1b0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            border: 1px solid #ebd1b0; display: flex; flex-direction: column; justify-content: center;
         }
         .preview-title {
-            font-size: 1.3rem;
-            color: #7b5c42;
-            margin-bottom: 15px;
-            font-style: italic;
-            text-align: center;
+            font-size: 1.3rem; color: #7b5c42; margin-bottom: 15px; font-style: italic; text-align: center;
         }
         .preview-area img {
-            max-width: 100%;
-            max-height: 350px;
-            border-radius: 20px;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-            border: 5px solid #ffffffd9;
-            object-fit: contain;
-            margin: 0 auto;
+            max-width: 100%; max-height: 350px; border-radius: 20px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15); border: 5px solid #ffffffd9;
+            object-fit: contain; margin: 0 auto;
         }
 
-        .footer-note {
-            text-align: right;
-            font-size: 15px;
-            color: #ad8a6f;
-            margin-top: 20px;
-            padding-right: 10px;
-        }
-
+        .footer-note { text-align: right; font-size: 15px; color: #ad8a6f; margin-top: 20px; padding-right: 10px; }
         .hidden-audio { display: none; }
 
         @media (max-width: 900px) {
@@ -432,7 +230,6 @@
             .screen-title { font-size: 1.3rem; }
         }
 
-        /* 移动端星空边缘缩小 (但保持可见) */
         @media (max-width: 600px) {
             body::before {
                 -webkit-mask: radial-gradient(circle at center, transparent 0, transparent calc(100% - 40px), black calc(100% - 40px));
@@ -491,7 +288,8 @@
         <div class="cinema-screen">
             <div class="screen-title">🎥 独家放映厅</div>
             <video id="cinemaVideo" loop playsinline preload="metadata">
-                <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz%E8%A7%86%E9%A2%91/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
+                <!-- 修改为 zwz_video 文件夹，视频文件名保持不变 -->
+                <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz_video/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
                 您的浏览器不支持视频播放。
             </video>
         </div>
@@ -518,23 +316,24 @@
         <div class="footer-note">—— 故事在唱片里，影像在银幕上 ——</div>
     </div>
 
-    <!-- 隐藏的背景音频 -->
+    <!-- 隐藏的背景音频 (链接已更新为 zwz_video/yipin.m4a) -->
     <audio id="bgAudio" loop preload="auto">
-        <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz%E8%A7%86%E9%A2%91/%E6%B7%B1%E6%83%85%E5%91%8A%E7%99%BD%EF%BC%8C%E7%88%B1%E5%9C%A8%E5%BF%83%E5%A4%B4.m4a" type="audio/mp4">
+        <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz_video/yipin.m4a" type="audio/mp4">
     </audio>
 
     <script>
         (function(){
             "use strict";
 
+            // 图片数组：zwz图片 → zwz_img
             const photoList = [
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/421dad3d48774f855b425b9c42be82a0.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/4a74e25429d56ebe177df2f373db1959.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/699ffe8250a4d0acb73baf3dd0be490b.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/813f09bc5d6348fce2e1f0a5b901561d.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz%E5%9B%BE%E7%89%87/b4240e1420f26fcb8ec8ea3d033057ae.jpg?raw=true"
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/421dad3d48774f855b425b9c42be82a0.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/4a74e25429d56ebe177df2f373db1959.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/699ffe8250a4d0acb73baf3dd0be490b.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/813f09bc5d6348fce2e1f0a5b901561d.jpg?raw=true",
+                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/b4240e1420f26fcb8ec8ea3d033057ae.jpg?raw=true"
             ];
             const totalPages = photoList.length;
             let currentIndex = 0;
