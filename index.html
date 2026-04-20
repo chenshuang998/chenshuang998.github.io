@@ -288,8 +288,8 @@
         <div class="cinema-screen">
             <div class="screen-title">🎥 独家放映厅</div>
             <video id="cinemaVideo" loop playsinline preload="metadata">
-                <!-- 修改为 zwz_video 文件夹，视频文件名保持不变 -->
-                <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz_video/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
+                <!-- ✅ 已替换为 jsDelivr CDN 加速链接 -->
+                <source src="https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_video/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
                 您的浏览器不支持视频播放。
             </video>
         </div>
@@ -316,24 +316,24 @@
         <div class="footer-note">—— 故事在唱片里，影像在银幕上 ——</div>
     </div>
 
-    <!-- 隐藏的背景音频 (链接已更新为 zwz_video/yipin.m4a) -->
+    <!-- 隐藏的背景音频 (✅ 已替换为 jsDelivr CDN 加速链接) -->
     <audio id="bgAudio" loop preload="auto">
-        <source src="https://github.com/chenshuang998/chenshuang998.github.io/raw/refs/heads/main/zwz_video/yipin.m4a" type="audio/mp4">
+        <source src="https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_video/yipin.m4a" type="audio/mp4">
     </audio>
 
     <script>
         (function(){
             "use strict";
 
-            // 图片数组：zwz图片 → zwz_img
+            // ✅ 图片数组：全部替换为 jsDelivr CDN 加速链接
             const photoList = [
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/2b952007df1981278a6c34e8f2d857f1.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/39b3de0022ec88d6a785d1baeb791984.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/421dad3d48774f855b425b9c42be82a0.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/4a74e25429d56ebe177df2f373db1959.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/699ffe8250a4d0acb73baf3dd0be490b.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/813f09bc5d6348fce2e1f0a5b901561d.jpg?raw=true",
-                "https://github.com/chenshuang998/chenshuang998.github.io/blob/main/zwz_img/b4240e1420f26fcb8ec8ea3d033057ae.jpg?raw=true"
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/2b952007df1981278a6c34e8f2d857f1.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/39b3de0022ec88d6a785d1baeb791984.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/421dad3d48774f855b425b9c42be82a0.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/4a74e25429d56ebe177df2f373db1959.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/699ffe8250a4d0acb73baf3dd0be490b.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/813f09bc5d6348fce2e1f0a5b901561d.jpg",
+                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/b4240e1420f26fcb8ec8ea3d033057ae.jpg"
             ];
             const totalPages = photoList.length;
             let currentIndex = 0;
