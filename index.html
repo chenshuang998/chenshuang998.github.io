@@ -83,11 +83,6 @@
             margin: 10px 0 15px; font-size: 2.6rem; text-shadow: 3px 3px 0 #f0dbc0;
         }
 
-        /* 加载状态 */
-        .loading-indicator {
-            text-align: center; padding: 30px; color: #5b3f2b; font-size: 1.2rem;
-        }
-
         .record-players {
             display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
             gap: 50px 80px; margin: 10px 0 20px;
@@ -342,11 +337,11 @@
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ---------- 全局变量 ----------
-            let photoList = [];                // 存储所有照片URL
+            let photoList = [];
             let totalPages = 0;
             let currentIndex = 0;
-            let audioUrl = '';                // 背景音乐URL (取第一条有audio_url的记录)
-            let videoUrl = '';                // 电影视频URL (取第一条有video_url的记录)
+            let audioUrl = '';
+            let videoUrl = '';
 
             // DOM 元素
             const bookPageImg = document.getElementById('bookPageImg');
@@ -358,7 +353,6 @@
             const video = document.getElementById('cinemaVideo');
             const gallery = document.querySelector('.gallery');
 
-            // 唱片和唱臂
             const turntable1 = document.getElementById('turntable1');
             const vinyl1 = document.getElementById('vinylDisc1');
             const turntable2 = document.getElementById('turntable2');
@@ -377,135 +371,112 @@
                     console.log('📦 获取到数据条数：', data?.length || 0);
                     
                     if (!data || data.length === 0) {
-                        console.warn('数据库中没有数据，请先添加记录。');
+                        console.warn('数据库中没有数据');
                         return;
                     }
 
-                    // 提取照片列表（过滤出有 image_url 的记录）
-                    photoList = data
-                        .filter(item => item.image_url)
-                        .map(item => item.image_url);
+                    photoList = data.filter(item => item.image_url).map(item => item.image_url);
                     totalPages = photoList.length;
                     console.log('🖼️ 照片数量：', totalPages);
 
-                    // 提取音频URL（取第一条有 audio_url 的记录）
                     const audioRecord = data.find(item => item.audio_url);
                     if (audioRecord) {
                         audioUrl = audioRecord.audio_url;
                         audio.innerHTML = `<source src="${audioUrl}" type="audio/mp4">`;
                         audio.load();
-                        console.log('🎵 音频源已设置：', audioUrl);
+                        console.log('🎵 音频源已设置');
                     }
 
-                    // 提取视频URL（取第一条有 video_url 的记录）
                     const videoRecord = data.find(item => item.video_url);
                     if (videoRecord) {
                         videoUrl = videoRecord.video_url;
                         video.innerHTML = `<source src="${videoUrl}" type="video/mp4">`;
                         video.load();
-                        console.log('🎬 视频源已设置：', videoUrl);
+                        console.log('🎬 视频源已设置');
                     }
 
-                    // 如果照片列表不为空，初始化显示
                     if (totalPages > 0) {
-                        console.log('✅ 准备渲染第一张照片，总数：', totalPages);
-                        // 延迟确保 DOM 完全就绪
-                        setTimeout(() => {
-                            updatePage(0);
-                        }, 100);
+                        console.log('✅ 准备渲染第一张照片');
+                        setTimeout(() => updatePage(0), 100);
                     } else {
-                        console.warn('⚠️ 没有找到包含 image_url 的记录');
                         pageIndicator.textContent = '0 / 0';
                     }
 
                 } catch (err) {
                     console.error('❌ 加载数据失败:', err);
-                    alert('加载相册数据失败，请检查网络或数据库配置。');
                 }
             }
 
             // 更新页面显示
             function updatePage(index) {
-                console.log(`📸 updatePage 被调用，索引: ${index}，总数: ${totalPages}`);
-                if (totalPages === 0) {
-                    console.warn('totalPages 为 0，无法更新');
-                    return;
-                }
+                console.log(`📸 updatePage 被调用，索引: ${index}`);
+                if (totalPages === 0) return;
                 if (index < 0) index = 0;
                 if (index >= totalPages) index = totalPages - 1;
                 currentIndex = index;
                 const src = photoList[currentIndex];
-                console.log('🔗 当前图片链接：', src);
+                console.log('🔗 准备加载图片:', src);
+                
+                // 移除旧监听器，避免累积
+                bookPageImg.onload = null;
+                bookPageImg.onerror = null;
+                
+                bookPageImg.onload = () => {
+                    console.log('✅ 图片加载成功');
+                };
+                bookPageImg.onerror = (e) => {
+                    console.error('❌ 图片加载失败，错误:', e);
+                    // 尝试直接在新标签页打开该链接，看看能否访问
+                    console.log('🔍 请手动复制以下链接到新标签页测试是否可访问：', src);
+                };
+                
                 bookPageImg.src = src;
                 bigImg.src = src;
                 pageIndicator.textContent = `${currentIndex+1} / ${totalPages}`;
                 prevBtn.disabled = (currentIndex === 0);
                 nextBtn.disabled = (currentIndex === totalPages - 1);
-                
-                // 检查图片是否加载成功
-                bookPageImg.onload = () => console.log('✅ 图片加载成功');
-                bookPageImg.onerror = (e) => console.error('❌ 图片加载失败', e);
             }
 
-            // 翻页方法
             window.nextPage = () => { if (currentIndex < totalPages-1) updatePage(currentIndex+1); };
             window.prevPage = () => { if (currentIndex > 0) updatePage(currentIndex-1); };
 
-            // 打开信封 (先加载数据，再显示)
             window.openAlbum = async () => {
-                const envelope = document.querySelector('.envelope');
-                envelope.classList.add('hide');
+                document.querySelector('.envelope').classList.add('hide');
                 gallery.classList.add('show');
-                
-                if (photoList.length === 0) {
-                    await loadDataFromSupabase();
-                }
-                
-                if (totalPages === 0) {
-                    pageIndicator.textContent = '暂无照片';
-                }
+                if (photoList.length === 0) await loadDataFromSupabase();
+                if (totalPages === 0) pageIndicator.textContent = '暂无照片';
             };
 
-            // ---------- 音乐控制 ----------
+            // 音乐控制
             audio.volume = 0.4;
             audio.addEventListener('play', () => { vinyl1.classList.add('spin'); turntable1.classList.add('playing'); });
             audio.addEventListener('pause', () => { vinyl1.classList.remove('spin'); turntable1.classList.remove('playing'); });
             window.toggleBgMusic = () => {
-                if (!audioUrl) {
-                    alert('还没有设置背景音乐，请在数据库中添加 audio_url 字段。');
-                    return;
-                }
+                if (!audioUrl) return alert('还没有设置背景音乐');
                 audio.paused ? audio.play() : audio.pause();
             };
 
-            // ---------- 视频控制 ----------
+            // 视频控制
             video.volume = 0.7;
             video.addEventListener('play', () => { vinyl2.classList.add('spin'); turntable2.classList.add('playing'); });
             video.addEventListener('pause', () => { vinyl2.classList.remove('spin'); turntable2.classList.remove('playing'); });
             window.toggleVideoPlay = () => {
-                if (!videoUrl) {
-                    alert('还没有设置电影视频，请在数据库中添加 video_url 字段。');
-                    return;
-                }
+                if (!videoUrl) return alert('还没有设置电影视频');
                 video.paused ? video.play() : video.pause();
             };
 
-            // 键盘翻页
             window.addEventListener('keydown', (e) => {
                 if (!gallery.classList.contains('show')) return;
                 if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
                 else if (e.key === 'ArrowRight') { e.preventDefault(); nextPage(); }
             });
 
-            // 页面卸载时暂停
             window.addEventListener('beforeunload', () => {
                 if (!audio.paused) audio.pause();
                 if (!video.paused) video.pause();
             });
 
-            // 预加载数据
             loadDataFromSupabase();
-
         })();
     </script>
 </body>
