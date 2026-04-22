@@ -187,9 +187,14 @@
         }
         .page-display { text-align: center; }
         .page-image {
-            width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 16px;
-            box-shadow: 0 8px 18px rgba(60, 30, 10, 0.3); border: 6px solid #f9efdf;
-            background: #d4bba3; cursor: pointer;
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 8px 18px rgba(60, 30, 10, 0.3);
+            border: 6px solid #f9efdf;
+            background: #d4bba3;
+            cursor: pointer;
         }
         .page-controls { display: flex; align-items: center; justify-content: center; margin-top: 25px; gap: 25px; }
         .page-btn {
@@ -217,9 +222,13 @@
             font-size: 1.3rem; color: #7b5c42; margin-bottom: 15px; font-style: italic; text-align: center;
         }
         .preview-area img {
-            max-width: 100%; max-height: 350px; border-radius: 20px;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.15); border: 5px solid #ffffffd9;
-            object-fit: contain; margin: 0 auto;
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 20px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+            border: 5px solid #ffffffd9;
+            object-fit: contain;
+            margin: 0 auto;
         }
 
         .footer-note { text-align: right; font-size: 15px; color: #ad8a6f; margin-top: 20px; padding-right: 10px; }
@@ -359,26 +368,25 @@
             async function loadDataFromSupabase() {
                 try {
                     console.log('🔄 开始从 Supabase 加载数据...');
-                    // 查询所有记录，按创建时间排序
                     const { data, error } = await supabase
                         .from('chenshuang')
                         .select('*')
                         .order('created_at', { ascending: true });
                     
                     if (error) throw error;
+                    console.log('📦 获取到数据条数：', data?.length || 0);
+                    
                     if (!data || data.length === 0) {
                         console.warn('数据库中没有数据，请先添加记录。');
                         return;
                     }
-
-                    console.log('📦 获取到数据条数:', data.length);
 
                     // 提取照片列表（过滤出有 image_url 的记录）
                     photoList = data
                         .filter(item => item.image_url)
                         .map(item => item.image_url);
                     totalPages = photoList.length;
-                    console.log(`🖼️ 照片数量: ${totalPages}`);
+                    console.log('🖼️ 照片数量：', totalPages);
 
                     // 提取音频URL（取第一条有 audio_url 的记录）
                     const audioRecord = data.find(item => item.audio_url);
@@ -386,9 +394,7 @@
                         audioUrl = audioRecord.audio_url;
                         audio.innerHTML = `<source src="${audioUrl}" type="audio/mp4">`;
                         audio.load();
-                        console.log('🎵 音频源已设置:', audioUrl);
-                    } else {
-                        console.warn('未找到 audio_url 字段');
+                        console.log('🎵 音频源已设置：', audioUrl);
                     }
 
                     // 提取视频URL（取第一条有 video_url 的记录）
@@ -397,17 +403,18 @@
                         videoUrl = videoRecord.video_url;
                         video.innerHTML = `<source src="${videoUrl}" type="video/mp4">`;
                         video.load();
-                        console.log('🎬 视频源已设置:', videoUrl);
-                    } else {
-                        console.warn('未找到 video_url 字段');
+                        console.log('🎬 视频源已设置：', videoUrl);
                     }
 
-                    // 如果照片列表不为空，延迟一点初始化显示，确保 DOM 已完全渲染
+                    // 如果照片列表不为空，初始化显示
                     if (totalPages > 0) {
-                        console.log('✅ 准备渲染第一张照片，总数:', totalPages);
-                        setTimeout(() => updatePage(0), 100);
+                        console.log('✅ 准备渲染第一张照片，总数：', totalPages);
+                        // 延迟确保 DOM 完全就绪
+                        setTimeout(() => {
+                            updatePage(0);
+                        }, 100);
                     } else {
-                        console.warn('⚠️ photoList 为空，请检查数据库中是否有 image_url');
+                        console.warn('⚠️ 没有找到包含 image_url 的记录');
                         pageIndicator.textContent = '0 / 0';
                     }
 
@@ -419,17 +426,25 @@
 
             // 更新页面显示
             function updatePage(index) {
-                console.log(`📸 updatePage 被调用，索引: ${index}, 总数: ${totalPages}`);
-                if (totalPages === 0) return;
+                console.log(`📸 updatePage 被调用，索引: ${index}，总数: ${totalPages}`);
+                if (totalPages === 0) {
+                    console.warn('totalPages 为 0，无法更新');
+                    return;
+                }
                 if (index < 0) index = 0;
                 if (index >= totalPages) index = totalPages - 1;
                 currentIndex = index;
                 const src = photoList[currentIndex];
+                console.log('🔗 当前图片链接：', src);
                 bookPageImg.src = src;
                 bigImg.src = src;
                 pageIndicator.textContent = `${currentIndex+1} / ${totalPages}`;
                 prevBtn.disabled = (currentIndex === 0);
                 nextBtn.disabled = (currentIndex === totalPages - 1);
+                
+                // 检查图片是否加载成功
+                bookPageImg.onload = () => console.log('✅ 图片加载成功');
+                bookPageImg.onerror = (e) => console.error('❌ 图片加载失败', e);
             }
 
             // 翻页方法
@@ -442,7 +457,6 @@
                 envelope.classList.add('hide');
                 gallery.classList.add('show');
                 
-                // 如果数据还未加载，则加载
                 if (photoList.length === 0) {
                     await loadDataFromSupabase();
                 }
