@@ -358,7 +358,8 @@
             // ---------- 从 Supabase 加载数据 ----------
             async function loadDataFromSupabase() {
                 try {
-                    // 查询所有记录，按创建时间排序（或者你可以自定义排序）
+                    console.log('🔄 开始从 Supabase 加载数据...');
+                    // 查询所有记录，按创建时间排序
                     const { data, error } = await supabase
                         .from('chenshuang')
                         .select('*')
@@ -370,46 +371,55 @@
                         return;
                     }
 
+                    console.log('📦 获取到数据条数:', data.length);
+
                     // 提取照片列表（过滤出有 image_url 的记录）
                     photoList = data
                         .filter(item => item.image_url)
                         .map(item => item.image_url);
                     totalPages = photoList.length;
+                    console.log(`🖼️ 照片数量: ${totalPages}`);
 
                     // 提取音频URL（取第一条有 audio_url 的记录）
                     const audioRecord = data.find(item => item.audio_url);
                     if (audioRecord) {
                         audioUrl = audioRecord.audio_url;
-                        // 设置音频源
                         audio.innerHTML = `<source src="${audioUrl}" type="audio/mp4">`;
                         audio.load();
+                        console.log('🎵 音频源已设置:', audioUrl);
+                    } else {
+                        console.warn('未找到 audio_url 字段');
                     }
 
                     // 提取视频URL（取第一条有 video_url 的记录）
                     const videoRecord = data.find(item => item.video_url);
                     if (videoRecord) {
                         videoUrl = videoRecord.video_url;
-                        // 设置视频源
                         video.innerHTML = `<source src="${videoUrl}" type="video/mp4">`;
                         video.load();
+                        console.log('🎬 视频源已设置:', videoUrl);
+                    } else {
+                        console.warn('未找到 video_url 字段');
                     }
 
-                    // 如果照片列表不为空，初始化显示
+                    // 如果照片列表不为空，延迟一点初始化显示，确保 DOM 已完全渲染
                     if (totalPages > 0) {
-                        updatePage(0);
+                        console.log('✅ 准备渲染第一张照片，总数:', totalPages);
+                        setTimeout(() => updatePage(0), 100);
                     } else {
-                        // 没有照片时显示占位
+                        console.warn('⚠️ photoList 为空，请检查数据库中是否有 image_url');
                         pageIndicator.textContent = '0 / 0';
                     }
 
                 } catch (err) {
-                    console.error('加载数据失败:', err);
+                    console.error('❌ 加载数据失败:', err);
                     alert('加载相册数据失败，请检查网络或数据库配置。');
                 }
             }
 
             // 更新页面显示
             function updatePage(index) {
+                console.log(`📸 updatePage 被调用，索引: ${index}, 总数: ${totalPages}`);
                 if (totalPages === 0) return;
                 if (index < 0) index = 0;
                 if (index >= totalPages) index = totalPages - 1;
@@ -432,13 +442,11 @@
                 envelope.classList.add('hide');
                 gallery.classList.add('show');
                 
-                // 显示加载状态（可选）
+                // 如果数据还未加载，则加载
                 if (photoList.length === 0) {
-                    // 如果还没加载过数据，现在加载
                     await loadDataFromSupabase();
                 }
                 
-                // 如果数据加载后仍无照片，可以显示提示
                 if (totalPages === 0) {
                     pageIndicator.textContent = '暂无照片';
                 }
@@ -481,7 +489,7 @@
                 if (!video.paused) video.pause();
             });
 
-            // 预加载数据（可选，提前拉取，让打开更快）
+            // 预加载数据
             loadDataFromSupabase();
 
         })();
