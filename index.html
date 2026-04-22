@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🎞️ 留声电影院 · 星空相册</title>
+    <title>🎞️ 留声电影院 · 星空相册 · 云记忆</title>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ===== 全局 + 星空边缘效果 ===== */
+        /* ===== 全局 + 星空边缘效果 (保持不变) ===== */
         body {
             font-family: '微软雅黑', 'Segoe UI', sans-serif;
             background: #fff4e6;
@@ -79,6 +81,11 @@
         h1 {
             text-align: center; color: #4e3620; font-weight: 400; letter-spacing: 8px;
             margin: 10px 0 15px; font-size: 2.6rem; text-shadow: 3px 3px 0 #f0dbc0;
+        }
+
+        /* 加载状态 */
+        .loading-indicator {
+            text-align: center; padding: 30px; color: #5b3f2b; font-size: 1.2rem;
         }
 
         .record-players {
@@ -216,7 +223,6 @@
         }
 
         .footer-note { text-align: right; font-size: 15px; color: #ad8a6f; margin-top: 20px; padding-right: 10px; }
-        .hidden-audio { display: none; }
 
         @media (max-width: 900px) {
             .album-book { flex-direction: column; }
@@ -288,9 +294,7 @@
         <div class="cinema-screen">
             <div class="screen-title">🎥 独家放映厅</div>
             <video id="cinemaVideo" loop playsinline preload="metadata">
-                <!-- ✅ 已替换为 jsDelivr CDN 加速链接 -->
-                <source src="https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_video/03044aa37ab8756ede9c07bc918d2f97.mp4" type="video/mp4">
-                您的浏览器不支持视频播放。
+                <!-- 视频源将通过数据库动态设置 -->
             </video>
         </div>
         
@@ -302,7 +306,7 @@
                 </div>
                 <div class="page-controls">
                     <button class="page-btn" id="prevBtn" onclick="prevPage()" title="上一页">←</button>
-                    <span class="page-indicator" id="pageIndicator">1 / 7</span>
+                    <span class="page-indicator" id="pageIndicator">- / -</span>
                     <button class="page-btn" id="nextBtn" onclick="nextPage()" title="下一页">→</button>
                 </div>
                 <p style="text-align:center; margin-top:15px; color:#6f4e34;">✨ 点击照片也可翻页</p>
@@ -316,35 +320,97 @@
         <div class="footer-note">—— 故事在唱片里，影像在银幕上 ——</div>
     </div>
 
-    <!-- 隐藏的背景音频 (✅ 已替换为 jsDelivr CDN 加速链接) -->
-    <audio id="bgAudio" loop preload="auto">
-        <source src="https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_video/yipin.m4a" type="audio/mp4">
-    </audio>
+    <!-- 隐藏的背景音频 -->
+    <audio id="bgAudio" loop preload="auto"></audio>
 
     <script>
         (function(){
             "use strict";
 
-            // ✅ 图片数组：全部替换为 jsDelivr CDN 加速链接
-            const photoList = [
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/2b952007df1981278a6c34e8f2d857f1.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/39b3de0022ec88d6a785d1baeb791984.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/421dad3d48774f855b425b9c42be82a0.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/4a74e25429d56ebe177df2f373db1959.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/699ffe8250a4d0acb73baf3dd0be490b.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/813f09bc5d6348fce2e1f0a5b901561d.jpg",
-                "https://cdn.jsdelivr.net/gh/chenshuang998/chenshuang998.github.io@main/zwz_img/b4240e1420f26fcb8ec8ea3d033057ae.jpg"
-            ];
-            const totalPages = photoList.length;
-            let currentIndex = 0;
+            // ---------- Supabase 配置 ----------
+            const SUPABASE_URL = 'https://cupvezbkwsllyekmwjxd.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_BqyzVhkal7cGThx1kwYpXg_ECeaRf0C';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+            // ---------- 全局变量 ----------
+            let photoList = [];                // 存储所有照片URL
+            let totalPages = 0;
+            let currentIndex = 0;
+            let audioUrl = '';                // 背景音乐URL (取第一条有audio_url的记录)
+            let videoUrl = '';                // 电影视频URL (取第一条有video_url的记录)
+
+            // DOM 元素
             const bookPageImg = document.getElementById('bookPageImg');
             const bigImg = document.getElementById('bigImg');
             const pageIndicator = document.getElementById('pageIndicator');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
+            const audio = document.getElementById('bgAudio');
+            const video = document.getElementById('cinemaVideo');
+            const gallery = document.querySelector('.gallery');
 
+            // 唱片和唱臂
+            const turntable1 = document.getElementById('turntable1');
+            const vinyl1 = document.getElementById('vinylDisc1');
+            const turntable2 = document.getElementById('turntable2');
+            const vinyl2 = document.getElementById('vinylDisc2');
+
+            // ---------- 从 Supabase 加载数据 ----------
+            async function loadDataFromSupabase() {
+                try {
+                    // 查询所有记录，按创建时间排序（或者你可以自定义排序）
+                    const { data, error } = await supabase
+                        .from('chenshuang')
+                        .select('*')
+                        .order('created_at', { ascending: true });
+                    
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        console.warn('数据库中没有数据，请先添加记录。');
+                        return;
+                    }
+
+                    // 提取照片列表（过滤出有 image_url 的记录）
+                    photoList = data
+                        .filter(item => item.image_url)
+                        .map(item => item.image_url);
+                    totalPages = photoList.length;
+
+                    // 提取音频URL（取第一条有 audio_url 的记录）
+                    const audioRecord = data.find(item => item.audio_url);
+                    if (audioRecord) {
+                        audioUrl = audioRecord.audio_url;
+                        // 设置音频源
+                        audio.innerHTML = `<source src="${audioUrl}" type="audio/mp4">`;
+                        audio.load();
+                    }
+
+                    // 提取视频URL（取第一条有 video_url 的记录）
+                    const videoRecord = data.find(item => item.video_url);
+                    if (videoRecord) {
+                        videoUrl = videoRecord.video_url;
+                        // 设置视频源
+                        video.innerHTML = `<source src="${videoUrl}" type="video/mp4">`;
+                        video.load();
+                    }
+
+                    // 如果照片列表不为空，初始化显示
+                    if (totalPages > 0) {
+                        updatePage(0);
+                    } else {
+                        // 没有照片时显示占位
+                        pageIndicator.textContent = '0 / 0';
+                    }
+
+                } catch (err) {
+                    console.error('加载数据失败:', err);
+                    alert('加载相册数据失败，请检查网络或数据库配置。');
+                }
+            }
+
+            // 更新页面显示
             function updatePage(index) {
+                if (totalPages === 0) return;
                 if (index < 0) index = 0;
                 if (index >= totalPages) index = totalPages - 1;
                 currentIndex = index;
@@ -356,46 +422,68 @@
                 nextBtn.disabled = (currentIndex === totalPages - 1);
             }
 
+            // 翻页方法
             window.nextPage = () => { if (currentIndex < totalPages-1) updatePage(currentIndex+1); };
             window.prevPage = () => { if (currentIndex > 0) updatePage(currentIndex-1); };
-            window.showImg = () => {};
 
-            window.openAlbum = () => {
-                document.querySelector('.envelope').classList.add('hide');
-                document.querySelector('.gallery').classList.add('show');
-                updatePage(0);
-                document.getElementById('bgAudio').load();
-                document.getElementById('cinemaVideo').load();
+            // 打开信封 (先加载数据，再显示)
+            window.openAlbum = async () => {
+                const envelope = document.querySelector('.envelope');
+                envelope.classList.add('hide');
+                gallery.classList.add('show');
+                
+                // 显示加载状态（可选）
+                if (photoList.length === 0) {
+                    // 如果还没加载过数据，现在加载
+                    await loadDataFromSupabase();
+                }
+                
+                // 如果数据加载后仍无照片，可以显示提示
+                if (totalPages === 0) {
+                    pageIndicator.textContent = '暂无照片';
+                }
             };
 
-            // 背景音乐控制
-            const audio = document.getElementById('bgAudio');
-            const turntable1 = document.getElementById('turntable1');
-            const vinyl1 = document.getElementById('vinylDisc1');
+            // ---------- 音乐控制 ----------
             audio.volume = 0.4;
             audio.addEventListener('play', () => { vinyl1.classList.add('spin'); turntable1.classList.add('playing'); });
             audio.addEventListener('pause', () => { vinyl1.classList.remove('spin'); turntable1.classList.remove('playing'); });
-            window.toggleBgMusic = () => audio.paused ? audio.play() : audio.pause();
+            window.toggleBgMusic = () => {
+                if (!audioUrl) {
+                    alert('还没有设置背景音乐，请在数据库中添加 audio_url 字段。');
+                    return;
+                }
+                audio.paused ? audio.play() : audio.pause();
+            };
 
-            // 电影视频控制
-            const video = document.getElementById('cinemaVideo');
-            const turntable2 = document.getElementById('turntable2');
-            const vinyl2 = document.getElementById('vinylDisc2');
+            // ---------- 视频控制 ----------
             video.volume = 0.7;
             video.addEventListener('play', () => { vinyl2.classList.add('spin'); turntable2.classList.add('playing'); });
             video.addEventListener('pause', () => { vinyl2.classList.remove('spin'); turntable2.classList.remove('playing'); });
-            window.toggleVideoPlay = () => video.paused ? video.play() : video.pause();
+            window.toggleVideoPlay = () => {
+                if (!videoUrl) {
+                    alert('还没有设置电影视频，请在数据库中添加 video_url 字段。');
+                    return;
+                }
+                video.paused ? video.play() : video.pause();
+            };
 
+            // 键盘翻页
             window.addEventListener('keydown', (e) => {
-                if (!document.querySelector('.gallery.show')) return;
+                if (!gallery.classList.contains('show')) return;
                 if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
                 else if (e.key === 'ArrowRight') { e.preventDefault(); nextPage(); }
             });
 
+            // 页面卸载时暂停
             window.addEventListener('beforeunload', () => {
                 if (!audio.paused) audio.pause();
                 if (!video.paused) video.pause();
             });
+
+            // 预加载数据（可选，提前拉取，让打开更快）
+            loadDataFromSupabase();
+
         })();
     </script>
 </body>
